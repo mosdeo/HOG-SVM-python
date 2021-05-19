@@ -1,6 +1,6 @@
 # Import the required modules
 from skimage.feature import local_binary_pattern
-from sklearn.svm import LinearSVC
+from sklearn.svm import LinearSVC, OneClassSVM
 from sklearn.linear_model import LogisticRegression
 import joblib
 import argparse as ap
@@ -39,9 +39,13 @@ if __name__ == "__main__":
     if clf_type == "LIN_SVM":
         clf = LinearSVC()
         print("Training a Linear SVM Classifier")
-        clf.fit(fds, labels)
-        # If feature directories don't exist, create them
-        if not os.path.isdir(os.path.split(model_path)[0]):
-            os.makedirs(os.path.split(model_path)[0])
-        joblib.dump(clf, model_path)
-        print("Classifier saved to {}".format(model_path))
+    elif clf_type == "ONE_CLASS_SVM":
+        clf = OneClassSVM(nu=0.1, kernel="rbf", gamma=0.1)
+        print("Training a One Class SVM Classifier")
+
+    clf.fit(fds, labels)
+    # If feature directories don't exist, create them
+    if not os.path.isdir(os.path.split(model_path)[0]):
+        os.makedirs(os.path.split(model_path)[0])
+    joblib.dump(clf, model_path)
+    print("Classifier saved to {}".format(model_path))
