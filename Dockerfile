@@ -20,15 +20,23 @@ RUN mkdir -p data/models
 # 複製測試用影像
 COPY data/images/neg/1E2A2127-3CF8-44E9-ACD2-1C9BB16CA0D5.JPG data/images/neg/
 COPY data/images/pos/00001_1.jpg data/images/pos/
+COPY data/images/test/00031.jpg data/images/test/
 
 RUN mkdir -p object-detector
-COPY object-detector/__init__.py object-detector/
-COPY object-detector/config.py object-detector/
-COPY object-detector/extract_features.py object-detector/
-COPY object-detector/nms.py object-detector/
-COPY object-detector/test_classifier.py object-detector/
-COPY object-detector/train_classifier.py object-detector/
+# 先用 Mount 取代
+# COPY object-detector/__init__.py object-detector/
+# COPY object-detector/config.py object-detector/
+# COPY object-detector/extract_features.py object-detector/
+# COPY object-detector/nms.py object-detector/
+# COPY object-detector/test_classifier.py object-detector/
+# COPY object-detector/train_classifier.py object-detector/
 
 # 给开发环境安装所需套件
 COPY requirements.txt requirements.txt
 RUN pip3 install --no-cache-dir -r requirements.txt -i https://mirrors.ustc.edu.cn/pypi/web/simple/
+
+# Solution for「ImportError: libGL.so.1: cannot open shared object file: No such file or directory」
+RUN sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list
+RUN apt-get clean
+RUN apt-get update
+RUN apt-get install ffmpeg libsm6 libxext6  -y --no-install-recommends
